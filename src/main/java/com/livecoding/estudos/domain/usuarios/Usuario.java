@@ -17,9 +17,20 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Column(name = "senha")
     private String senha;
-    private Number perfis;
+    @Column(name = "perfis")
+    private Integer  perfis;
+
+    public Usuario(RequestUsuario requestUsuario){
+        this.name = requestUsuario.name();
+        this.email = requestUsuario.email();
+        this.senha = requestUsuario.senha();
+        this.perfis= requestUsuario.perfis();
+    }
+
 }
