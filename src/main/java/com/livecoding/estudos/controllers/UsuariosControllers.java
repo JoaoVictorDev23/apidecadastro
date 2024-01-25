@@ -26,19 +26,15 @@ public class UsuariosControllers {
     }
 
     @PostMapping
-    public ResponseEntity createUsers(@RequestBody @Valid RequestUsuario user){
-        Usuario newUsuario = new Usuario(user);
-
-        System.out.println(user);
-
+    public ResponseEntity createUsers(@RequestBody @Valid RequestUsuario user) {
+        Usuario newUsuario = new Usuario(user, user.perfis());
         repository.save(newUsuario);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity updateUsers(@RequestBody @Valid RequestUsuario user){
-
+    public ResponseEntity updateUsers(@RequestBody @Valid RequestUsuario user) {
         Optional<Usuario> optionalUsuario = repository.findById(user.id());
         if (optionalUsuario.isPresent()) {
             Usuario usuario = optionalUsuario.get();
@@ -46,12 +42,13 @@ public class UsuariosControllers {
             usuario.setEmail(user.email());
             usuario.setSenha(user.senha());
             usuario.setPerfis(user.perfis());
+            repository.save(usuario);  // Certifique-se de salvar as alterações no banco de dados
             return ResponseEntity.ok(usuario);
-        }
-        else{
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     @DeleteMapping("/{id}")
     @Transactional

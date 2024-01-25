@@ -3,6 +3,8 @@ package com.livecoding.estudos.domain.usuarios;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public record RequestUsuario(
 
         String id,
@@ -12,5 +14,5 @@ public record RequestUsuario(
         String email,
         @NotNull
         String senha,
-        @NotNull Integer perfis) {
+        @NotNull List<Integer> perfis) {
 }

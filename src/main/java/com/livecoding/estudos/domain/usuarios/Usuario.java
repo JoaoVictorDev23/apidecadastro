@@ -4,6 +4,10 @@ package com.livecoding.estudos.domain.usuarios;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 @Table(name="usuarios")
 @Entity(name="usuarios")
 @Getter
@@ -23,14 +27,17 @@ public class Usuario {
     private String email;
     @Column(name = "senha")
     private String senha;
-    @Column(name = "perfis")
-    private Integer  perfis;
+    @ElementCollection
+    @CollectionTable(name = "usuario_perfis", joinColumns = @JoinColumn(name = "usuario_id"))
+    @Column(name = "perfil", nullable = false)
+    private List<Integer> perfis = new ArrayList<>();
 
-    public Usuario(RequestUsuario requestUsuario){
+    public Usuario(RequestUsuario requestUsuario, List<Integer> perfis) {
         this.name = requestUsuario.name();
         this.email = requestUsuario.email();
         this.senha = requestUsuario.senha();
-        this.perfis= requestUsuario.perfis();
+        this.perfis = perfis;
     }
+
 
 }
