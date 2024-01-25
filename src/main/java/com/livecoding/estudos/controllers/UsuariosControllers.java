@@ -20,7 +20,7 @@ public class UsuariosControllers {
     private UsuarioRepository repository;
     @GetMapping
     public ResponseEntity getAllUsers(){
-        var allusuarios = repository.findAll();
+        var allusuarios = repository.findAllByActiveTrue();
         return ResponseEntity.ok(allusuarios);
 
     }
@@ -52,11 +52,16 @@ public class UsuariosControllers {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity deleteUsuario(@PathVariable String id){
-        repository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity deleteUsuario(@PathVariable String id) {
+        Optional<Usuario> optionalUsuario = repository.findById(id);
+        if (optionalUsuario.isPresent()) {
+            Usuario usuario = optionalUsuario.get();
+            usuario.setActive(false);
+
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
-
-
-
 }

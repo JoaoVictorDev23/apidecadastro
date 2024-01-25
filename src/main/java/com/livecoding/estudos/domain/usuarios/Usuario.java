@@ -32,11 +32,14 @@ public class Usuario {
     @Column(name = "perfil", nullable = false)
     private List<Integer> perfis = new ArrayList<>();
 
+    private Boolean active;
+
     public Usuario(RequestUsuario requestUsuario, List<Integer> perfis) {
         this.name = requestUsuario.name();
         this.email = requestUsuario.email();
         this.senha = requestUsuario.senha();
         this.perfis = perfis;
+        this.active= true;
     }
 
 
