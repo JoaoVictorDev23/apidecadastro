@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import static org.springframework.security.config.Elements.JWT;
 
@@ -19,22 +20,21 @@ import static org.springframework.security.config.Elements.JWT;
 public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
+
     public String generateToken(Usuario user) {
         try {
-            // Configure o algoritmo e a chave secreta
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            // Configure o token com o emissor, assunto, data de expiração e assine-o com o algoritmo
             String token = com.auth0.jwt.JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getEmail())
-                    .withExpiresAt(genExpirationDate()) // Expira em 24 horas (em milissegundos)
+                    .withClaim("name", user.getName())
+                    .withClaim("profiles", user.getPerfis().stream().map(perfil -> perfil.getDescricao()).collect(Collectors.toList()))
+                    .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
 
-            // Retorne o token gerado
             return token;
         } catch (JWTCreationException exception) {
-            // Lidar com exceções, por exemplo, logar ou lançar uma exceção personalizada
             throw new RuntimeException("Error while generating token", exception);
         }
     }

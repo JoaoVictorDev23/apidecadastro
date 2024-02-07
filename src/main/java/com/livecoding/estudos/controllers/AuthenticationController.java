@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@CrossOrigin(origins = "http://192.168.100.127:4200")
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -25,12 +28,26 @@ public class AuthenticationController {
     private TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid AuthenticationDTO usuario){
+    public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid AuthenticationDTO usuario) {
         var usernamepassword = new UsernamePasswordAuthenticationToken(usuario.email(), usuario.senha());
         var auth = this.authenticationManager.authenticate(usernamepassword);
 
-        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+        var user = (Usuario) auth.getPrincipal();
+        var token = tokenService.generateToken(user);
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("name", user.getName());
+
+        // Obter todos os códigos de perfil
+        Set<String> perfilCodigos = user.getPerfis().stream()
+                .map(perfil -> perfil.getCodigo())
+                .collect(Collectors.toSet());
+
+        response.put("perfilCodigos", perfilCodigos);
+
+        return ResponseEntity.ok(response);
     }
+
+
 }
